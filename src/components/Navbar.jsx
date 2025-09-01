@@ -4,10 +4,10 @@ export default function Navbar() {
         <nav className="container flex items-center justify-between py-4">
           <h1 className="text-xl font-bold">Clothify</h1>
           <ul className="hidden md:flex gap-6 text-sm font-medium">
-            <li><a href="#" className="hover:text-gray-700">Home</a></li>
-            <li><a href="#" className="hover:text-gray-700">Shop</a></li>
-            <li><a href="#" className="hover:text-gray-700">About</a></li>
-            <li><a href="#" className="hover:text-gray-700">Contact</a></li>
+            <li><a href="/" className="hover:text-gray-700">Home</a></li>
+            <li><a href="/shop" className="hover:text-gray-700">Shop</a></li>
+            <li><a href="/about" className="hover:text-gray-700">About</a></li>
+            <li><a href="/cart" className="hover:text-gray-700">Cart</a></li>
           </ul>
         </nav>
       </header>
