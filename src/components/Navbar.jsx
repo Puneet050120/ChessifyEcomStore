@@ -1,12 +1,19 @@
 import { useState } from "react";
 import { Menu, X, ShoppingCart } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { logout } from "../store/authSlice";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-gray-950/80 backdrop-blur-lg border-b border-gray-800">
@@ -28,6 +35,22 @@ export default function Navbar() {
               )}
             </Link>
           </li>
+          {isAuthenticated ? (
+            <li>
+              <button onClick={handleLogout} className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                Logout
+              </button>
+            </li>
+          ) : (
+            <>
+              <li><Link to="/login" className="text-gray-300 hover:text-white transition">Login</Link></li>
+              <li>
+                <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                  Sign Up
+                </Link>
+              </li>
+            </>
+          )}
         </ul>
 
         {/* Mobile Menu Button */}
@@ -53,6 +76,22 @@ export default function Navbar() {
             <li><Link to="/" className="text-gray-300 hover:text-white transition">Home</Link></li>
             <li><Link to="/shop" className="text-gray-300 hover:text-white transition">Shop</Link></li>
             <li><Link to="/about" className="text-gray-300 hover:text-white transition">About</Link></li>
+            {isAuthenticated ? (
+              <li>
+                <button onClick={handleLogout} className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                  Logout
+                </button>
+              </li>
+            ) : (
+              <>
+                <li><Link to="/login" className="text-gray-300 hover:text-white transition">Login</Link></li>
+                <li>
+                  <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                    Sign Up
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       )}
