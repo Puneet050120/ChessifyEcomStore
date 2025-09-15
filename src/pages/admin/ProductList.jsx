@@ -8,12 +8,12 @@ export default function ProductList() {
 
   return (
     <div className="container py-10">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
         <h1 className="text-2xl font-bold">Manage Products</h1>
         <div className="flex gap-3">
           <button
             onClick={() => setShowForm(true)}
-            className="bg-black text-white px-4 py-2 rounded-md"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
           >
             + Add Product
           </button>

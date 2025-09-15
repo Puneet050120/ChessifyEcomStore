@@ -50,9 +50,9 @@ export default function ProductFormModal({ open, setOpen }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg max-w-lg w-full">
-        <h2 className="text-xl font-bold mb-4">Add Product</h2>
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center">
+      <div className="bg-gray-900 border border-gray-800 p-6 rounded-lg max-w-lg w-full">
+        <h2 className="text-xl font-bold mb-4 text-white">Add Product</h2>
         <form onSubmit={handleSubmit} className="grid gap-4">
           <input
             type="text"
@@ -85,19 +85,19 @@ export default function ProductFormModal({ open, setOpen }) {
             onChange={(e) => setImage(e.target.files[0])}
           />
 
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="px-4 py-2 border rounded"
+              className="px-4 py-2 border border-gray-700 text-gray-300 rounded-md hover:bg-gray-800"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-black text-white px-4 py-2 rounded"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
               disabled={loading}
             >
               {loading ? "Saving..." : "Save"}
