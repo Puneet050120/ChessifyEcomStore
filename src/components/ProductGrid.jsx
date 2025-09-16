@@ -1,14 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/cartSlice';
-
-const products = [
-    { id: 1, name: "Wireless Earbuds", price: 2499 },
-    { id: 2, name: "Mechanical Keyboard", price: 7999 },
-    { id: 3, name: "Graphic Hoodie", price: 1499 },
-    { id: 4, name: "Smart Water Bottle", price: 3999 },
-    { id: 5, name: "Sci-Fi Novel", price: 699 },
-    { id: 6, name: "Desk Lamp", price: 1999 },
-  ];
+import { useState, useEffect } from 'react';
+import { getProducts } from '../services/productService';
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-IN', {
@@ -19,6 +12,19 @@ const products = [
 
   export default function ProductGrid() {
     const dispatch = useDispatch();
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+      const fetchProducts = async () => {
+        try {
+          const productsData = await getProducts();
+          setProducts(productsData.slice(0, 6));
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        }
+      };
+      fetchProducts();
+    }, []);
 
     return (
       <section className="py-20 bg-gray-950" id="shop">

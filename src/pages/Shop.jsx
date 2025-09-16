@@ -1,44 +1,83 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { shopData } from '../data/shopData';
 import ProductCard from '../components/shop/ProductCard';
 import FilterSidebar from '../components/shop/FilterSidebar';
 import { Filter, X } from 'lucide-react';
+import { getProducts, getCategories } from '../services/productService';
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 export default function Shop() {
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const query = useQuery();
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const [categoriesData, productsData] = await Promise.all([getCategories(), getProducts()]);
+        setCategories(categoriesData);
+        setProducts(productsData);
+
+        const categoryName = query.get('category');
+        if (categoryName) {
+          const category = categoriesData.find(c => c.name === categoryName);
+          if (category) {
+            setSelectedCategory(category);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching initial data:", error);
+      }
+    };
+    fetchInitialData();
+  }, [query]);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const categoryProducts = products.filter(p => p.categoryId === selectedCategory.id);
+      setFilteredProducts(categoryProducts);
+    } else {
+      setFilteredProducts(products);
+    }
+  }, [selectedCategory, products]);
 
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
-    setFilteredProducts(category.products);
   };
 
   const handleFilter = (filters) => {
-    let products = selectedCategory.products;
-    
-    products = products.filter(p => p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]);
+    let productsToFilter = selectedCategory ? products.filter(p => p.categoryId === selectedCategory.id) : products;
+
+    productsToFilter = productsToFilter.filter(p => p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]);
 
     if (filters.brands.length > 0) {
-      products = products.filter(p => filters.brands.includes(p.brand));
+      productsToFilter = productsToFilter.filter(p => filters.brands.includes(p.brand));
     }
 
     if (filters.rating > 0) {
-      products = products.filter(p => p.rating >= filters.rating);
+      productsToFilter = productsToFilter.filter(p => p.rating >= filters.rating);
     }
 
-    setFilteredProducts(products);
+    setFilteredProducts(productsToFilter);
     setIsFilterOpen(false);
   };
 
   const handleClearFilters = () => {
-    setFilteredProducts(selectedCategory.products);
+    if (selectedCategory) {
+      const categoryProducts = products.filter(p => p.categoryId === selectedCategory.id);
+      setFilteredProducts(categoryProducts);
+    }
   };
 
-  const currentCategoryData = selectedCategory ? shopData.find(c => c.category === selectedCategory.category) : null;
-  const brands = currentCategoryData ? [...new Set(currentCategoryData.products.map(p => p.brand))] : [];
-  const colors = currentCategoryData ? [...new Set(currentCategoryData.products.map(p => p.color))] : [];
+  const brands = selectedCategory ? [...new Set(products.filter(p => p.categoryId === selectedCategory.id).map(p => p.brand))] : [];
+  const colors = selectedCategory ? [...new Set(products.filter(p => p.categoryId === selectedCategory.id).map(p => p.color))] : [];
 
   if (!selectedCategory) {
     return (
@@ -47,13 +86,13 @@ export default function Shop() {
         <div className="container py-16">
           <h1 className="text-3xl font-bold mb-8 text-white text-center">Explore Our Collections</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {shopData.map(cat => (
-              <div key={cat.category} onClick={() => handleCategoryClick(cat)} className="relative rounded-lg overflow-hidden h-64 cursor-pointer group">
+            {categories.map(cat => (
+              <div key={cat.id} onClick={() => handleCategoryClick(cat)} className="relative rounded-lg overflow-hidden h-64 cursor-pointer group">
                 <div className="absolute inset-0 bg-gray-800"></div>
                 <div className="absolute inset-0 bg-black/50 group-hover:bg-black/70 transition-colors"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <h2 className="text-3xl font-bold text-white">{cat.category}</h2>
+                    <h2 className="text-3xl font-bold text-white">{cat.name}</h2>
                     <p className="text-gray-300">{cat.description}</p>
                   </div>
                 </div>
@@ -74,7 +113,7 @@ export default function Shop() {
             <button onClick={() => setSelectedCategory(null)} className="text-gray-400 hover:text-white mb-4">
               &larr; Back to Categories
             </button>
-            <h1 className="text-3xl font-bold text-white">{selectedCategory.category}</h1>
+            <h1 className="text-3xl font-bold text-white">{selectedCategory.name}</h1>
           </div>
           <button onClick={() => setIsFilterOpen(!isFilterOpen)} className="md:hidden bg-gray-800 p-2 rounded-md">
             <Filter className="text-white" />
