@@ -22,3 +22,13 @@ export const getCategories = async () => {
     throw error;
   }
 };
+
+export const searchProducts = async (searchTerm) => {
+  try {
+    const response = await axios.get(`${API_URL}/products/search?searchTerm=${searchTerm}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error searching products:', error);
+    throw error;
+  }
+};
