@@ -3,6 +3,7 @@ import { Menu, X, ShoppingCart, Search as SearchIcon } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../store/authSlice";
+import { clearCart } from "../store/cartSlice";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(clearCart());
   };
 
   const handleSearch = (e) => {

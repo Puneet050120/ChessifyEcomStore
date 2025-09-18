@@ -46,7 +46,7 @@ import { getProducts } from '../services/productService';
                   <p className="text-sm text-gray-400">{formatPrice(item.price)}</p>
                 </div>
                 <button 
-                  onClick={() => dispatch(addToCart(item))}
+                  onClick={() => dispatch(addToCart({ product: item, quantity: 1 }))}
                   className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 >
                   Add to Cart

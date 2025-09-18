@@ -1,6 +1,7 @@
+import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromCart, updateQuantity } from "../store/cartSlice";
+import { getCart, removeFromCart, updateCartItem, removeFromCartLocal, updateQuantityLocal } from "../store/cartSlice";
 import { Link } from "react-router-dom";
 import { Plus, Minus, Trash2 } from "lucide-react";
 
@@ -13,18 +14,45 @@ const formatPrice = (price) => {
 
 export default function Cart() {
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.items);
-  const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const { items: cartItems, status } = useSelector((state) => state.cart);
+  const { token } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (token) {
+      dispatch(getCart());
+    }
+  }, [dispatch, token]);
+
+  const cartTotal = cartItems.reduce((total, item) => total + (item.product?.price || item.price) * item.quantity, 0);
   const shippingCost = 40;
   const grandTotal = cartTotal + shippingCost;
 
   const handleUpdateQuantity = (productId, quantity) => {
-    dispatch(updateQuantity({ productId, quantity }));
+    if (token) {
+      dispatch(updateCartItem({ productId, quantity }));
+    } else {
+      dispatch(updateQuantityLocal({ productId, quantity }));
+    }
   };
 
   const handleRemoveFromCart = (productId) => {
-    dispatch(removeFromCart(productId));
+    if (token) {
+      dispatch(removeFromCart(productId));
+    } else {
+      dispatch(removeFromCartLocal(productId));
+    }
   };
+
+  if (status === 'loading') {
+    return (
+      <>
+        <Navbar />
+        <div className="container py-16 text-center">
+          <h1 className="text-3xl font-bold mb-4 text-white">Loading your cart...</h1>
+        </div>
+      </>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -54,25 +82,25 @@ export default function Cart() {
               <div key={item.id} className="flex items-center justify-between bg-gray-900 p-4 rounded-lg border border-gray-800">
                 <div className="flex items-center gap-4">
                   <div className="w-20 h-20 bg-gray-800 rounded-md">
-                    {/* Placeholder for image */}
+                    <img src={item.product?.imageUrl || item.imageUrl} alt={item.product?.name || item.name} className="w-full h-full object-cover rounded-md" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white">{item.name}</h3>
-                    <p className="text-sm text-gray-400">{formatPrice(item.price)}</p>
+                    <h3 className="font-semibold text-white">{item.product?.name || item.name}</h3>
+                    <p className="text-sm text-gray-400">{formatPrice(item.product?.price || item.price)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2 bg-gray-800 px-2 py-1 rounded-md">
-                    <button onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)} className="text-gray-400 hover:text-white">
+                    <button onClick={() => handleUpdateQuantity(item.product?.id || item.id, item.quantity - 1)} className="text-gray-400 hover:text-white">
                       <Minus size={16} />
                     </button>
                     <span className="font-medium text-white">{item.quantity}</span>
-                    <button onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)} className="text-gray-400 hover:text-white">
+                    <button onClick={() => handleUpdateQuantity(item.product?.id || item.id, item.quantity + 1)} className="text-gray-400 hover:text-white">
                       <Plus size={16} />
                     </button>
                   </div>
-                  <p className="font-semibold text-white w-24 text-right">{formatPrice(item.price * item.quantity)}</p>
-                  <button onClick={() => handleRemoveFromCart(item.id)} className="text-gray-500 hover:text-red-500">
+                  <p className="font-semibold text-white w-24 text-right">{formatPrice((item.product?.price || item.price) * item.quantity)}</p>
+                  <button onClick={() => handleRemoveFromCart(item.product?.id || item.id)} className="text-gray-500 hover:text-red-500">
                     <Trash2 size={20} />
                   </button>
                 </div>

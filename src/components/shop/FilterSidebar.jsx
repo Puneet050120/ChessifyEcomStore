@@ -47,8 +47,8 @@ export default function FilterSidebar({ onFilter, onClear, brands, colors }) {
       <div className="mb-6">
         <h4 className="font-semibold mb-2 text-white">Brands</h4>
         <div className="space-y-2">
-          {brands.map(brand => (
-            <label key={brand} className="flex items-center gap-2 text-gray-300">
+          {brands.map((brand, index) => (
+            <label key={`${brand}-${index}`} className="flex items-center gap-2 text-gray-300">
               <input type="checkbox" checked={selectedBrands.includes(brand)} onChange={() => handleBrandChange(brand)} className="form-checkbox bg-gray-800 border-gray-700" />
               {brand}
             </label>
