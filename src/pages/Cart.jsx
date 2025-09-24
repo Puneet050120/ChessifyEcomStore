@@ -121,14 +121,14 @@ export default function Cart() {
                 <span className="font-medium text-white">{formatPrice(shippingCost)}</span>
               </div>
               <div className="border-t border-gray-800 my-2"></div>
-              <div className="flex justify-between text-lg">
+              <div className="flex justify-between text-lg mb-4">
                 <span className="font-bold text-white">Total</span>
                 <span className="font-bold text-white">{formatPrice(grandTotal)}</span>
               </div>
             </div>
-            <button className="mt-6 w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700">
+            <Link to="/shipping-details" className="block mt-6 w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 text-center">
               Proceed to Checkout
-            </button>
+            </Link>
           </div>
 
         </div>

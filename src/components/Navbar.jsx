@@ -41,6 +41,7 @@ export default function Navbar() {
               <li><Link to="/" className="text-gray-300 hover:text-white transition">Home</Link></li>
               <li><Link to="/shop" className="text-gray-300 hover:text-white transition">Shop</Link></li>
               <li><Link to="/about" className="text-gray-300 hover:text-white transition">About</Link></li>
+              {isAuthenticated && <li><Link to="/my-orders" className="text-gray-300 hover:text-white transition">My Orders</Link></li>}
             </ul>
             <form onSubmit={handleSearch} className="flex items-center bg-gray-800 rounded-full px-4 py-2 border border-gray-700 focus-within:border-blue-600 transition-all duration-300 max-w-xs ml-6">
               <input
@@ -115,6 +116,7 @@ export default function Navbar() {
               <li><Link to="/" className="text-gray-300 hover:text-white transition">Home</Link></li>
               <li><Link to="/shop" className="text-gray-300 hover:text-white transition">Shop</Link></li>
               <li><Link to="/about" className="text-gray-300 hover:text-white transition">About</Link></li>
+              {isAuthenticated && <li><Link to="/my-orders" className="text-gray-300 hover:text-white transition">My Orders</Link></li>}
               {isAuthenticated ? (
                 <li>
                   <button onClick={handleLogout} className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">

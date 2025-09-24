@@ -3,10 +3,18 @@ import authService from '../services/authService';
 
 const token = localStorage.getItem('token');
 const userItem = localStorage.getItem('user');
-const user = userItem && userItem !== 'undefined' ? JSON.parse(userItem) : null;
+console.log('authSlice initial load - userItem:', userItem);
+let user = null;
+try {
+  user = userItem ? JSON.parse(userItem) : null;
+} catch (e) {
+  console.error('Failed to parse user from localStorage:', e);
+  localStorage.removeItem('user'); // Clear invalid user data
+}
+console.log('authSlice initial load - parsed user:', user);
 
 const initialState = {
-  user: user || null,
+  user: user,
   token: token || null,
   isAuthenticated: !!token,
   isLoading: false,
@@ -28,6 +36,7 @@ export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) =
     const response = await authService.login(userData.email, userData.password);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
+      console.log('Login fulfilled - action.payload:', response.data.user);
       localStorage.setItem('user', JSON.stringify(response.data.user));
     }
     return response.data;
@@ -67,7 +76,7 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
+        state.user = action.payload;
         state.token = action.payload.token;
       })
       .addCase(login.rejected, (state, action) => {
